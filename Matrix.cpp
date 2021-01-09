@@ -1,11 +1,5 @@
 #include "Matrix.h"
 
-Matrix::Matrix()
-{
-	this->rowSize = this->colSize = 0;
-	this->data = nullptr;
-}
-
 Matrix::Matrix(int size)
 {
 	this->rowSize = this->colSize = 0;
