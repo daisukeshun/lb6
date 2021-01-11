@@ -6,8 +6,9 @@ Matrix::Matrix(int size)
 	this->data = nullptr;
 	if (size > 0)
 	{ 
-		this->rowSize = this->colSize = size;
-		this->data = (int*)calloc(size * size, sizeof(int));
+		this->colSize = size;
+		this->rowSize = 1;
+		this->data = (int*)calloc(size, sizeof(int));
 	}
 }
 
@@ -63,7 +64,7 @@ void Matrix::Mirror(void)
 	}
 }
 
-int Matrix::rowSum(int rowIndex)
+int Matrix::RowSum(int rowIndex)
 {
 	int ret = 0;
 	if (rowIndex < this->rowSize && rowIndex >= 0)
@@ -76,33 +77,79 @@ int Matrix::rowSum(int rowIndex)
 	return ret;
 }
 
-int Matrix::colSum(int colIndex)
+int Matrix::RowSum(int rowIndex, int n)
+{
+	int ret = 0;
+	if (rowIndex < this->rowSize && rowIndex >= 0)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			ret += this->Value(rowIndex, i);
+		}
+	}
+	return ret;
+}
+
+int Matrix::ColSum(int colIndex)
 {
 	int ret = 0;
 	if (colIndex < this->colSize && colIndex >= 0)
 	{
-		for (int i = 0; i < this->rowSize; i++)
+		for (int i = 0; i < this->colSize; i++)
 		{
 			ret += this->Value(i, colIndex);
 		}
 	}
 	return ret;
 }
+
+int Matrix::ColSum(int colIndex, int n)
+{
+	int ret = 0;
+	if (colIndex < this->colSize && colIndex >= 0)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			ret += this->Value(i, colIndex);
+		}
+	}
+	return ret;
+}
+
+void Matrix::SetData(const int* data, size_t size)
+{
+	memcpy(this->data, data, size);
+}
+
+void Matrix::Fill(int n)
+{
+	memset(this->data, n, this->rowSize * this->colSize * sizeof(int));
+}
+
+int Matrix::GetRowCount(void)
+{
+	return this->rowSize;
+}
+
 int & Matrix::Value(int i, int j)
 {
 	return this->operator()(i, j);
 }
 
+int Matrix::GetColCount(void)
+{
+	return this->colSize;
+}
+
 void Matrix::Log(void)
 {
-	printf("\n");
-	for (int i = 0; i < this->rowSize; ++i)
+	for (int i = 0; i < this->rowSize * this->colSize; ++i)
 	{
-		for (int j = 0; j < this->colSize; ++j)
+		if (i % this->colSize == 0)
 		{
-			printf("%d\t", this->Value(i, j));
+			printf("\n");
 		}
-		printf("\n");
+		printf("%d\t", this->data[i]);
 	}
 	printf("\n");
 }
@@ -145,3 +192,4 @@ Matrix::~Matrix()
 		this->data = nullptr;
 	}
 }
+

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <limits.h>
+#include <string.h>
 
 #define min(a, b) a < b? a : b;
 #define max(a, b) a > b? a : b;
@@ -19,8 +20,14 @@ public:
 	int& operator()(int i) const;  //можно получать элементы по индексу
 	void Identity(int number);	//заполняет главную диагональ матрицы числом
 	void Mirror(void);	//отражает матрицу относительно главной диагонали
-	int rowSum(int rowIndex);	//сумма в строке
-	int colSum(int colIndex);	//сумма в колонке
+	int RowSum(int rowIndex);	//сумма в строке
+	int RowSum(int rowIndex, int n);	//сумма некоторого количества элементов в строке
+	int ColSum(int colIndex);	//сумма в колонке
+	int ColSum(int colIndex, int n);	//сумма некоторого количества элементов в колонке
+	void SetData(const int * data, size_t size);	//можно установить сырые данные в матрицу
+	void Fill(int n);
+	int GetRowCount(void);
+	int GetColCount(void);
 	void Log(void);	//выводит матрицу в консоль
 	int Max(void);	//максимальный элемент в матрице
 	int Min(void);	//минимальный элемент в матрице
