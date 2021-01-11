@@ -43,9 +43,10 @@ int betweenP(Matrix& base, Matrix * G1, int x, Matrix * G2, int y)
 	return base(0[G1](x), 0[G2](y));
 }
 
-void checkTwoSubgraphs(Matrix & base, Matrix * G1, Matrix * G2)
+int checkTwoSubgraphs(Matrix & base, Matrix * G1, Matrix * G2)
 {
 	int tmp1, tmp2, tmp3;
+	int maxDeltaS = INT_MIN;
 	for (int i = 0; i < 0[G1].GetColCount(); ++i)
 	{
 		for (int j = 0; j < 0[G2].GetColCount(); ++j)
@@ -53,12 +54,24 @@ void checkTwoSubgraphs(Matrix & base, Matrix * G1, Matrix * G2)
 			tmp1 = insideP(base, G1, i, G2, j);
 			tmp2 = outsideP(base, G1, i, G2, j);
 			tmp3 = betweenP(base, G1, i, G2, j);
+			maxDeltaS = max(
+				maxDeltaS, 
+				deltaS(
+					insideP(base, G1, i, G2, j),
+					outsideP(base, G1, i, G2, j),
+					betweenP(base, G1, i, G2, j)
+				)
+			);
+
+			/*
 			printf("(%d, %d) %d %d %d : %d\n", 
 				0[G1](i), 0[G2](j), 
 				tmp1, tmp2, tmp3,
 				deltaS(tmp1, tmp2, tmp3));
+			*/
 		}
 	}
+	return maxDeltaS;
 }
 
 int checkInput()
@@ -108,7 +121,6 @@ int main()
 			{
 				0[G[i]](j) = tmp++;
 			}
-			0[G[i]].Log();
 		}
 
 		for (int i = 0; i < subgraphCount; ++i)
@@ -117,8 +129,8 @@ int main()
 			{
 				if(i != j)
 				{ 
-					printf("%d %d\n", i, j);
-					checkTwoSubgraphs(X, G[i], G[j]);
+					int S = checkTwoSubgraphs(X, G[i], G[j]);
+					printf("(%d %d) : %d\n", i, j, S);
 					printf("\n");
 				}
 			}
