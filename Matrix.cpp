@@ -200,6 +200,15 @@ int Matrix::Contains(int value)
 	return -1;
 }
 
+bool Matrix::IsFilled(void)
+{
+	for (int i = 0; i < this->rowSize * this->colSize; i++)
+	{
+		if (this->data[i] == 0) { return false; }
+	}
+	return true;
+}
+
 Matrix::~Matrix()
 {
 	this->rowSize = this->colSize = 0;

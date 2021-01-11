@@ -17,7 +17,23 @@ int deltaS(int pInside, int pOutside, int pxy)
 	return pInside - pOutside - 2 * pxy;
 }
 
-int connectionSumBetwenOneGraphByIndex(Matrix& base, Matrix* G, int index)
+int outsideConnectionBetweenOneGraph(Matrix& base, Matrix* G)
+{
+	int ret = 0;
+	for (int i = 0; i < ref(G).GetColCount(); ++i)
+	{
+		for (int j = 0; j < base.GetColCount(); j++)
+		{
+			if(ref(G)(i) != j)
+			{ 
+				ret += base(ref(G)(i), j);
+			}
+		}
+	}
+	return ret;
+}
+
+int connectionSumBetweenOneGraphByIndex(Matrix& base, Matrix* G, int index)
 {
 	int ret = 0;
 	for (int i = 0; i < ref(G).GetColCount(); ++i)
@@ -29,7 +45,7 @@ int connectionSumBetwenOneGraphByIndex(Matrix& base, Matrix* G, int index)
 
 int connectionSumBetweenTwoGraphsByIndex(Matrix& base, Matrix * G1, int x, Matrix * G2, int y)
 {
-	return connectionSumBetwenOneGraphByIndex(base, G2, ref(G1)(x)) + connectionSumBetwenOneGraphByIndex(base, G1, 0[G2](y));
+	return connectionSumBetweenOneGraphByIndex(base, G2, ref(G1)(x)) + connectionSumBetweenOneGraphByIndex(base, G1, 0[G2](y));
 }
 
 int outsideP(Matrix& base, Matrix * G1, int x, Matrix * G2, int y)
@@ -55,32 +71,30 @@ unsigned long long checkTwoSubgraphs(Matrix& base, Matrix * G1, Matrix * G2)
 	{
 		for (int j = 0; j < ref(G2).GetColCount(); ++j)
 		{
-			
 			tmpDeltaS = deltaS(
 				insideP(base, G1, i, G2, j),
 				outsideP(base, G1, i, G2, j),
 				betweenP(base, G1, i, G2, j)
 			);
-			if (maxDeltaS < tmpDeltaS)
+			if (maxDeltaS < tmpDeltaS && tmpDeltaS > 0)
 			{
 				maxDeltaS = tmpDeltaS;
 				x = i;
 				y = j;
 			}
-			/*
 			printf("(%d, %d) %d %d %d : %d\n", 
 				0[G1](i), 0[G2](j), 
 				insideP(base, G1, i, G2, j),
 				outsideP(base, G1, i, G2, j),
 				betweenP(base, G1, i, G2, j),
 				tmpDeltaS);
-			*/
 		}
 	}
 	unsigned long long ret = 0;
 	ret += x;
 	ret *= 16;
 	ret += y;
+	printf("%d %d\n", ref(G1)(x), ref(G2)(y));
 	return ret;
 }
 
@@ -116,8 +130,6 @@ void byte_to_binary(unsigned long long n)
 int main()
 {
 	if (checkInput() > 0) { return 1; }
-	printf("%ld %ld\n", sizeof(long long), sizeof(int));
-
 	Matrix X(verticesCount, verticesCount);
 	Matrix P(verticesCount);
 	Matrix PB(verticesCount);
@@ -146,9 +158,13 @@ int main()
 			}
 		}
 
+		ref(G[0])(0) = 6;
+		ref(G[1])(0) = 0;
+
 		Matrix used(verticesCount);
-		long x;
-		long y;
+		used.Identity(1);
+		long x = -1;
+		long y = -1;
 		unsigned long long S;
 		for (int i = 0; i < subgraphCount; ++i)
 		{
@@ -156,27 +172,28 @@ int main()
 			{
 				if(i != j)
 				{ 
+					printf("(%d %d)\n", i, j);
 					S = checkTwoSubgraphs(X, G[i], G[j]);
 					x = S / 16;
 					y = S - (S / 16) * 16;
-					printf("(%d %d) : %d %d\n", i, j, ref(G[i])(x), ref(G[j])(y));
-					if (used.Contains(ref(G[i])(x)) < 0 && used.Contains(ref(G[j])(y)) < 0)
+					printf("%d %d\n", ref(G[i])(x), ref(G[j])(y));
+					if (used.Contains(ref(G[i])(x)) < 0 && used.Contains(ref(G[j])(y)) < 0 && x >= 0 && y >= 0)
 					{
 						tmp = ref(G[i])(x);
 						ref(G[i])(x) = ref(G[j])(y);
 						ref(G[j])(y) = tmp;
-
 						used(ref(G[i])(x)) = used(ref(G[j])(y)) = 1;
-						used.Log();
-					}
+					} 
 				}
 			}
 		}
 
 		for (int i = 0; i < subgraphCount; i++) { 
-			ref(G[i]) += 1;
+			//ref(G[i]) += 1;
 			ref(G[i]).Log(); 
+			tmp += outsideConnectionBetweenOneGraph(X, G[i]);
 		}
+		printf("%d\n", tmp);
 		
 	}
 
