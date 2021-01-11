@@ -42,6 +42,14 @@ int& Matrix::operator()(int i) const
 	return this->data[0];
 }
 
+void Matrix::operator+=(int n)
+{
+	for (int i = 0; i < this->rowSize * this->colSize; i++)
+	{
+		this->data[i] += n;
+	}
+}
+
 void Matrix::Identity(int number)
 {
 	for (int i = 0; i < this->rowSize; i++)
@@ -181,6 +189,15 @@ bool Matrix::IsEmpty(void)
 		if (this->data[i]) { return false; }
 	}
 	return true;
+}
+
+int Matrix::Contains(int value)
+{
+	for (int i = 0; i < this->colSize*rowSize; i++)
+	{
+		if (this->data[i] == value) { return i; }
+	}
+	return -1;
 }
 
 Matrix::~Matrix()
